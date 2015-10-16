@@ -102,9 +102,11 @@
 
 - (CGSize)heightWithFont:(UIFont*)withFont 
                    width:(float)width 
-               linebreak:(UILineBreakMode)lineBreakMode{
-	
-	CGSize suggestedSize = [self sizeWithFont:withFont constrainedToSize:CGSizeMake(width, FLT_MAX) lineBreakMode:(NSLineBreakMode)lineBreakMode];
+               linebreak:(NSLineBreakMode)lineBreakMode{
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+    paragraphStyle.lineBreakMode = lineBreakMode;
+    NSDictionary *attributes = @{NSFontAttributeName:withFont, NSParagraphStyleAttributeName:paragraphStyle.copy};
+	CGSize suggestedSize = [self boundingRectWithSize:CGSizeMake(width, FLT_MAX)options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:NULL].size;
 	
 	return suggestedSize;
 }

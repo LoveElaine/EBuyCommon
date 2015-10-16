@@ -69,7 +69,7 @@
 
 - (CGSize)heightWithFont:(UIFont*)withFont 
                     width:(float)width 
-                linebreak:(UILineBreakMode)lineBreakMode;
+                linebreak:(NSLineBreakMode)lineBreakMode;
 
 
 /**
@@ -77,15 +77,15 @@
  *
  * @return md5 hash of this string
  */
-@property (nonatomic, readonly) NSString* md5Hash;
+//@property (nonatomic, readonly) NSString* md5Hash;
 
 
 - (NSString *)replacedWhiteSpacsByString:(NSString *)replaceString;
 
 - (NSString *)URLEvalutionEncoding;
 
-- (NSString *)queryStringNoEncodeFromDictionary:(NSDictionary *)dict;
+//- (NSString *)queryStringNoEncodeFromDictionary:(NSDictionary *)dict;
 
-- (NSString *)passport;
+//- (NSString *)passport;
 
 @end

@@ -108,7 +108,7 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect,
         _label.numberOfLines = 0;
         _label.lineBreakMode = NSLineBreakByCharWrapping;
         _label.font = [UIFont systemFontOfSize:17.0f];
-        _label.textAlignment = UITextAlignmentCenter;
+        _label.textAlignment = NSTextAlignmentCenter;
         _label.textColor = [UIColor whiteColor];
     }
     return _label;
@@ -121,7 +121,7 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect,
         _titleLabel.backgroundColor = [UIColor clearColor];
         _titleLabel.adjustsFontSizeToFitWidth = YES;
         _titleLabel.font = [UIFont boldSystemFontOfSize:20.0f];
-        _titleLabel.textAlignment = UITextAlignmentCenter;
+        _titleLabel.textAlignment = NSTextAlignmentCenter;
         _titleLabel.textColor = [UIColor whiteColor];
     }
     return _titleLabel;
@@ -179,10 +179,11 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect,
     //无title
     if ([self.titleText length] == 0)
     {
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+        paragraphStyle.lineBreakMode = NSLineBreakByCharWrapping;
+        NSDictionary *attributes = @{NSFontAttributeName:self.label.font, NSParagraphStyleAttributeName:paragraphStyle.copy};
         //计算文字的size
-        CGSize labelSize = [_labelText sizeWithFont:self.label.font
-                                  constrainedToSize:CGSizeMake(BBTipLabelMaxWidth, 1000)
-                                      lineBreakMode:NSLineBreakByCharWrapping];
+        CGSize labelSize = [self.labelText boundingRectWithSize:CGSizeMake(BBTipLabelMaxWidth, 1000) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:NULL].size;
         CGSize maskSize = CGSizeMake(labelSize.width+40, labelSize.height+30);
         
         //计算框的center
@@ -237,9 +238,11 @@ static void addRoundedRectToPath(CGContextRef context, CGRect rect,
         CGSize titleSize = CGSizeMake(BBTipTitleMaxWidth, 20);
         self.label.font = [UIFont systemFontOfSize:16.0f];
         //计算文字的size
-        CGSize labelSize = [_labelText sizeWithFont:self.label.font
-                                  constrainedToSize:CGSizeMake(BBTipTitleMaxWidth, 1000)
-                                      lineBreakMode:NSLineBreakByCharWrapping];
+        
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+        paragraphStyle.lineBreakMode = NSLineBreakByCharWrapping;
+        NSDictionary *attributes = @{NSFontAttributeName:self.label.font, NSParagraphStyleAttributeName:paragraphStyle.copy};
+        CGSize labelSize = [_labelText boundingRectWithSize:CGSizeMake(BBTipTitleMaxWidth, 1000) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:NULL].size;
         
         CGSize maskSize = CGSizeMake(BBTipTitleMaxWidth+40, titleSize.height+labelSize.height+30);
         

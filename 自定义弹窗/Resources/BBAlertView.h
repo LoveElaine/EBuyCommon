@@ -91,7 +91,7 @@ typedef void (^BBBasicBlock)(void);
 /*!
  文本对齐方式
  */
-@property (nonatomic, assign) UITextAlignment contentAlignment;
+@property (nonatomic, assign) NSTextAlignment contentAlignment;
 
 
 @property (nonatomic, weak) id<BBAlertViewDelegate> delegate;

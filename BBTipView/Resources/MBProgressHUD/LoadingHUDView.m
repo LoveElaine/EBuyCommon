@@ -37,7 +37,7 @@
 #define HEIGHT_MARGIN 20
 
 @interface LoadingHUDView (PrivateMethods)
-- (CGSize) calculateHeightOfTextFromWidth:(NSString*)text font: (UIFont*)withFont width:(float)width linebreak:(UILineBreakMode)lineBreakMode;
+- (CGSize) calculateHeightOfTextFromWidth:(NSString*)text font: (UIFont*)withFont width:(float)width linebreak:(NSLineBreakMode)lineBreakMode;
 @end
 
 
@@ -74,8 +74,8 @@
 	UIFont *titleFont = [UIFont boldSystemFontOfSize:16];
 	UIFont *messageFont = [UIFont systemFontOfSize:12];
 	
-	CGSize s1 = [self calculateHeightOfTextFromWidth:_title font:titleFont width:200 linebreak:UILineBreakModeTailTruncation];
-	CGSize s2 = [self calculateHeightOfTextFromWidth:_message font:messageFont width:200 linebreak:UILineBreakModeCharacterWrap];
+	CGSize s1 = [self calculateHeightOfTextFromWidth:_title font:titleFont width:200 linebreak:NSLineBreakByTruncatingTail];
+	CGSize s2 = [self calculateHeightOfTextFromWidth:_message font:messageFont width:200 linebreak:NSLineBreakByCharWrapping];
 	
 	if([_title length] < 1) s1.height = 0;
 	if([_message length] < 1) s2.height = 0;
@@ -100,15 +100,27 @@
 	
 	
 	// DRAW FIRST TEXT
-	[[UIColor whiteColor] set];
+//	[[UIColor whiteColor] set];
 	r = CGRectMake(x+WIDTH_MARGIN, _activity.frame.size.height + 10 + HEIGHT_MARGIN, width, s1.height);
-	CGSize s = [_title drawInRect:r withFont:titleFont lineBreakMode:UILineBreakModeTailTruncation alignment:UITextAlignmentCenter];
+    
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+    paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+    paragraphStyle.alignment = NSTextAlignmentCenter;
+    NSDictionary *attributes = @{NSFontAttributeName:titleFont, NSParagraphStyleAttributeName:paragraphStyle.copy,NSForegroundColorAttributeName:[UIColor whiteColor]};
+    CGSize titleSize = [_title sizeWithAttributes:attributes];
+    [_title drawInRect:r withAttributes:attributes];
 	
 	
 	// DRAW SECOND TEXT
-	r.origin.y += s.height;
+	r.origin.y += titleSize.height;
 	r.size.height = s2.height;
-	[_message drawInRect:r withFont:messageFont lineBreakMode:UILineBreakModeCharacterWrap alignment:UITextAlignmentCenter];
+    
+    
+    NSMutableParagraphStyle *messageParagraphStyle = [[NSMutableParagraphStyle alloc]init];
+    messageParagraphStyle.lineBreakMode = NSLineBreakByCharWrapping;
+    messageParagraphStyle.alignment = NSTextAlignmentCenter;
+    NSDictionary *messageAttributes = @{NSFontAttributeName:messageFont, NSParagraphStyleAttributeName:messageParagraphStyle.copy,NSForegroundColorAttributeName:[UIColor whiteColor]};
+    [_message drawInRect:r withAttributes:messageAttributes];
 	
 	
 	
@@ -156,20 +168,21 @@
 }
 
 
-- (CGSize) calculateHeightOfTextFromWidth:(NSString*)text font: (UIFont*)withFont width:(float)width linebreak:(UILineBreakMode)lineBreakMode{
-	return [text sizeWithFont:withFont 
-			constrainedToSize:CGSizeMake(width, FLT_MAX) 
-				lineBreakMode:lineBreakMode];
+- (CGSize) calculateHeightOfTextFromWidth:(NSString*)text font: (UIFont*)withFont width:(float)width linebreak:(NSLineBreakMode)lineBreakMode{
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+    paragraphStyle.lineBreakMode = lineBreakMode;
+    NSDictionary *attributes = @{NSFontAttributeName:withFont, NSParagraphStyleAttributeName:paragraphStyle.copy};
+	return [text boundingRectWithSize:CGSizeMake(width, FLT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:NULL].size;
 }
 - (void) adjustHeight{
 	
 	CGSize s1 = [_title heightWithFont:[UIFont boldSystemFontOfSize:16.0] 
 								 width:200.0 
-							 linebreak:UILineBreakModeTailTruncation];
+							 linebreak:NSLineBreakByTruncatingTail];
 	
 	CGSize s2 = [_message heightWithFont:[UIFont systemFontOfSize:12.0] 
 								   width:200.0 
-							   linebreak:UILineBreakModeCharacterWrap];
+							   linebreak:NSLineBreakByCharWrapping];
 
 	CGRect r = self.frame;
 	r.size.height = s1.height + s2.height + 20;

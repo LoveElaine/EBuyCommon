@@ -139,7 +139,7 @@ static UIWindow *gMaskWindow = nil;
     _shouldDismissAfterConfirm = YES;
     _dimBackground = YES;
     self.backgroundColor = [UIColor clearColor];
-    _contentAlignment = UITextAlignmentCenter;
+    _contentAlignment = NSTextAlignmentCenter;
     
     [self addObserver:self
            forKeyPath:@"dimBackground"
@@ -192,9 +192,10 @@ static UIWindow *gMaskWindow = nil;
         //计算content
 //        UIFont *titleFont = [UIFont systemFontOfSize:20.0f];
         UIFont *contentFont = [UIFont systemFontOfSize:16.0f];
-        CGSize messageSize = [message sizeWithFont:contentFont
-                                 constrainedToSize:CGSizeMake(contentWidth, 1000)
-                                     lineBreakMode:UILineBreakModeCharacterWrap];
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+        paragraphStyle.lineBreakMode = NSLineBreakByCharWrapping;
+        NSDictionary *attributes = @{NSFontAttributeName:contentFont, NSParagraphStyleAttributeName:paragraphStyle.copy};
+        CGSize messageSize = [message boundingRectWithSize:CGSizeMake(contentWidth, 1000) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:NULL].size;
         CGFloat contentHeight = messageSize.height > 20 ? messageSize.height : 20;
         BOOL isNeedUseTextView = NO;
         if (contentHeight > 240)  //content最高240,12行
@@ -491,7 +492,7 @@ static UIWindow *gMaskWindow = nil;
                 //titleLabel
                 UIImageView *titleTipImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"alert_title_tip.png"]];
                 UIFont *titleFont = [UIFont boldSystemFontOfSize:20.0f];
-                CGSize titleSize = [title sizeWithFont:titleFont];
+                CGSize titleSize = [title sizeWithAttributes:@{NSFontAttributeName:titleFont}];
                 CGFloat titleWidth = titleSize.width<240?titleSize.width:240;
                 self.titleLabel.text = title;
                 self.titleLabel.font = titleFont;
@@ -955,7 +956,7 @@ static UIWindow *gMaskWindow = nil;
 {
     if (!_titleLabel) {
         _titleLabel = [[UILabel alloc] init];
-        _titleLabel.textAlignment = UITextAlignmentCenter;
+        _titleLabel.textAlignment = NSTextAlignmentCenter;
         _titleLabel.backgroundColor = [UIColor clearColor];
     }
     return _titleLabel;
@@ -966,7 +967,7 @@ static UIWindow *gMaskWindow = nil;
     if (!_bodyTextLabel) {
         _bodyTextLabel = [[UILabel alloc] init];
         _bodyTextLabel.numberOfLines = 0;
-        _bodyTextLabel.lineBreakMode = UILineBreakModeCharacterWrap;
+        _bodyTextLabel.lineBreakMode = NSLineBreakByCharWrapping;
         _bodyTextLabel.textAlignment = _contentAlignment;
         _bodyTextLabel.backgroundColor = [UIColor clearColor];
     }
@@ -1276,9 +1277,10 @@ static UIWindow *gMaskWindow = nil;
     if (message == nil || [message isEqualToString:@""]) {
         return 20.0f;
     }
-    CGSize messageSize = [message sizeWithFont:[UIFont systemFontOfSize:16.0] 
-                             constrainedToSize:CGSizeMake(kContentLabelWidth, 1000) 
-                                 lineBreakMode:UILineBreakModeCharacterWrap];
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+    paragraphStyle.lineBreakMode = NSLineBreakByCharWrapping;
+    NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:16.0], NSParagraphStyleAttributeName:paragraphStyle.copy};
+    CGSize messageSize = [message boundingRectWithSize:CGSizeMake(kContentLabelWidth, 1000) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:NULL].size;
     
     return messageSize.height+10.0;
 }

@@ -374,7 +374,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 - (void)setupLabels {
 	label = [[UILabel alloc] initWithFrame:self.bounds];
 	label.adjustsFontSizeToFitWidth = NO;
-	label.textAlignment = UITextAlignmentCenter;
+	label.textAlignment = NSTextAlignmentCenter;
 	label.opaque = NO;
 	label.backgroundColor = [UIColor clearColor];
 	label.textColor = [UIColor whiteColor];
@@ -385,7 +385,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 	detailsLabel = [[UILabel alloc] initWithFrame:self.bounds];
 	detailsLabel.font = self.detailsLabelFont;
 	detailsLabel.adjustsFontSizeToFitWidth = NO;
-	detailsLabel.textAlignment = UITextAlignmentCenter;
+	detailsLabel.textAlignment = NSTextAlignmentCenter;
 	detailsLabel.opaque = NO;
 	detailsLabel.backgroundColor = [UIColor clearColor];
 	detailsLabel.textColor = [UIColor whiteColor];
@@ -440,7 +440,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
         rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 ];
         [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
         rotationAnimation.duration = 2;
-        rotationAnimation.RepeatCount = 1000;
+        rotationAnimation.repeatCount = 1000;
         rotationAnimation.cumulative = NO;
         rotationAnimation.removedOnCompletion = NO;
         rotationAnimation.fillMode = kCAFillModeForwards;
@@ -468,15 +468,18 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
         totalSize.width = indicatorF.size.width;
         totalSize.height = indicatorF.size.height;
         
-        CGSize labelSize = [label.text sizeWithFont:label.font];
+        CGSize labelSize = [label.text sizeWithAttributes:@{NSFontAttributeName:label.font}];
         labelSize.width = MIN(labelSize.width, maxWidth);
         totalSize.width += labelSize.width;
         totalSize.width += 20;
 
         CGFloat remainingHeight = bounds.size.height - totalSize.height - kPadding - 4 * margin;
         CGSize maxSize = CGSizeMake(maxWidth, remainingHeight);
-        CGSize detailsLabelSize = [detailsLabel.text sizeWithFont:detailsLabel.font
-                                                constrainedToSize:maxSize lineBreakMode:detailsLabel.lineBreakMode];
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+        paragraphStyle.lineBreakMode = detailsLabel.lineBreakMode;
+        NSDictionary *attributes = @{NSFontAttributeName:detailsLabel.font, NSParagraphStyleAttributeName:paragraphStyle.copy};
+        //计算文字的size
+        CGSize detailsLabelSize = [detailsLabel.text boundingRectWithSize:maxSize options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:NULL].size;
         totalSize.width = MAX(totalSize.width, detailsLabelSize.width);
         totalSize.height += detailsLabelSize.height;
         totalSize.height += 2 * margin;
@@ -532,7 +535,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
         totalSize.width = MAX(totalSize.width, indicatorF.size.width);
         totalSize.height += indicatorF.size.height;
         
-        CGSize labelSize = [label.text sizeWithFont:label.font];
+        CGSize labelSize = [label.text sizeWithAttributes:@{NSFontAttributeName:label.font}];
         labelSize.width = MIN(labelSize.width, maxWidth);
         totalSize.width = MAX(totalSize.width, labelSize.width);
         totalSize.height += labelSize.height;
@@ -542,8 +545,11 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
         
         CGFloat remainingHeight = bounds.size.height - totalSize.height - kPadding - 4 * margin;
         CGSize maxSize = CGSizeMake(maxWidth, remainingHeight);
-        CGSize detailsLabelSize = [detailsLabel.text sizeWithFont:detailsLabel.font
-                                                constrainedToSize:maxSize lineBreakMode:detailsLabel.lineBreakMode];
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+        paragraphStyle.lineBreakMode = detailsLabel.lineBreakMode;
+        NSDictionary *attributes = @{NSFontAttributeName:detailsLabel.font, NSParagraphStyleAttributeName:paragraphStyle.copy};
+        //计算文字的size
+        CGSize detailsLabelSize = [detailsLabel.text boundingRectWithSize:maxSize options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:NULL].size;
         totalSize.width = MAX(totalSize.width, detailsLabelSize.width);
         totalSize.height += detailsLabelSize.height;
         if (detailsLabelSize.height > 0.f && (indicatorF.size.height > 0.f || labelSize.height > 0.f)) {

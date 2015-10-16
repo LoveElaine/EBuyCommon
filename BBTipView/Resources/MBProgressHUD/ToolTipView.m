@@ -84,7 +84,7 @@
 		
         label = [[UILabel alloc] initWithFrame:self.bounds];
 		
-		label.lineBreakMode = UILineBreakModeWordWrap;
+		label.lineBreakMode = NSLineBreakByWordWrapping;
 		
 		label.adjustsFontSizeToFitWidth = NO;
 		
@@ -106,8 +106,11 @@
 	
     // Add label if label text was set
     if (nil != self.labelText) {
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+        paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+        NSDictionary *attributes = @{NSFontAttributeName:self.labelFont, NSParagraphStyleAttributeName:paragraphStyle.copy};
 		
-		CGSize dims = [self.labelText sizeWithFont:self.labelFont constrainedToSize:CGSizeMake(280, 1000.0f) lineBreakMode:NSLineBreakByWordWrapping];
+		CGSize dims = [self.labelText boundingRectWithSize:CGSizeMake(280, 1000.0f) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:NULL].size;
 		
         // Compute label dimensions based on font metrics if size is larger than max then clip the label width
         float lHeight = dims.height;
@@ -144,7 +147,7 @@
 		
         label.font = self.labelFont;
 
-        label.textAlignment = UITextAlignmentCenter;
+        label.textAlignment = NSTextAlignmentCenter;
 		
         label.opaque = NO;
 		
@@ -235,8 +238,8 @@
 - (void)drawRect2:(CGRect)rect {
     // Center HUD
     CGRect allRect = self.bounds;
-	
-	CGSize dims = [self.labelText sizeWithFont:self.labelFont];
+    
+	CGSize dims = [self.labelText sizeWithAttributes:@{NSFontAttributeName:self.labelFont}];
 	
 	float lHeight = dims.height+40;
 	float lWidth = dims.width+ +50;
